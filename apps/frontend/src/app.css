@@ -1,0 +1,9 @@
+body {
+  background-color: black;
+}
+
+.app {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 2rem;
+}
