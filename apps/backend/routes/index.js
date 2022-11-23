@@ -1,5 +1,5 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 
 function sleep(time) {
   return new Promise((resolve) => setTimeout(resolve, time));
