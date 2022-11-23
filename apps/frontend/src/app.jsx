@@ -1,12 +1,14 @@
 import { useState } from "react";
 import "./app.css";
 
-function request() {
+function request(requestId) {
   return new Promise((resolve, reject) => {
     let data = [];
     let size;
     let currentMessageIndex;
-    const evtSource = new EventSource("http://localhost:5174");
+    const evtSource = new EventSource(
+      `http://localhost:5174?requestId=${requestId}`
+    );
     evtSource.addEventListener("error", (event) => {
       console.log("onError", event);
       evtSource.close();
@@ -32,18 +34,31 @@ function request() {
 }
 
 export function App() {
-  const [data, setData] = useState();
+  const [requestId, setRequestId] = useState(1);
+  const [data, setData] = useState([]);
 
-  async function handleClick() {
-    console.log("handleClick");
-    const result = await request();
-    console.log(result);
+  async function doRequest(requestId, startTime) {
+    const result = await request(requestId);
+    setData((prev) => ({
+      ...prev,
+      [requestId]: {
+        startTime,
+        endTime: performance.now(),
+        result,
+      },
+    }));
+  }
+
+  async function handleClick(requestId) {
+    let startTime = performance.now();
+    setRequestId((prev) => prev + 1);
+    doRequest(requestId, startTime);
   }
 
   return (
     <div className="app">
-      <button onClick={handleClick}>request</button>
-      <pre>{data}</pre>
+      <button onClick={() => handleClick(requestId)}>request</button>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
     </div>
   );
 }

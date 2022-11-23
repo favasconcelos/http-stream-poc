@@ -1,9 +1,18 @@
 body {
   background-color: black;
+  color: white;
 }
 
 .app {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: column;
   gap: 2rem;
+}
+
+button {
+  background: black;
+  border: 1px solid white;
+  width: min-content;
+  color: white;
+  padding: 0.5rem;
 }
