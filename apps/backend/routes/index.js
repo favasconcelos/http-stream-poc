@@ -6,23 +6,33 @@ function sleep(time) {
 }
 
 router.get("/", async function (req, res, next) {
+  const { id } = req.query;
+
   res.set("Content-Type", "text/event-stream");
   res.set("Cache-Control", "no-store");
 
+  // fake an error if the ID is 2
+  if (id === "2") {
+    res.write("event: error\n");
+    const data = { status: 412, message: "something" };
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+    return res.end();
+  }
+
   const arr = [1, 2, 3];
-  let data = { value: arr.length, time: new Date().toISOString() };
+  res.write(`id: ${id}\n`);
   res.write("event: size\n");
+  let data = { value: arr.length, time: new Date().toISOString() };
   res.write(`data: ${JSON.stringify(data)}\n\n`);
 
   for (let i = 0; i < arr.length; i++) {
-    data = { value: arr[i], time: new Date().toISOString() };
+    data = { id, value: arr[i], time: new Date().toISOString() };
     res.write("event: data\n");
-    res.write(`id: ${i}\n`);
     const content = `data: ${JSON.stringify(data)}\n\n`;
     res.write(content);
-    console.log(content);
-    const rand = Math.floor(Math.random() * 10);
-    await sleep(rand + 1 * 1000);
+    // console.log(content);
+    // fake a async process to add some delay
+    await sleep(1000);
   }
   res.end();
 });
